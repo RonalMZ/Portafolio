@@ -109,7 +109,7 @@ export const projects: Project[] = [
   description: "Asistente inteligente de compras con IA que recomienda productos personalizados usando lenguaje natural y streaming en tiempo real.",
   tags: ["Next.js", "Vercel AI SDK", "Gemini", "Tailwind", "shadcn/ui"],
   image: "/images/projects/ai-shop-assistant.jpg", // ← Pega aquí la ruta a tu imagen real
-  demo: "https://aishopassistantmzt.vercel.app/",   // ← Pega aquí tu URL real
+  demo: "https://aishopassistantmzt.vercel.app",   // ← Pega aquí tu URL real
   code: "https://github.com/RonalMZ/ai-shop-assistant",
   featured: true,
 },
