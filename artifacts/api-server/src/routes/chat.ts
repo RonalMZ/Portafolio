@@ -1,6 +1,12 @@
 import { Router, type IRouter, type Request, type Response } from "express";
 import { openai } from "@ai-sdk/openai";
-import { streamText, type CoreMessage } from "ai";
+import {
+  streamText,
+  createUIMessageStream,
+  pipeUIMessageStreamToResponse,
+  convertToModelMessages,
+  type UIMessage,
+} from "ai";
 
 const router: IRouter = Router();
 
@@ -71,62 +77,24 @@ function localFallback(userMessage: string): string {
   return `Para detalles más específicos te recomiendo escribirle directamente a ${personalInfo.email}. Puedo contarte de sus proyectos, habilidades o experiencia.`;
 }
 
-function fallbackStream(text: string): Response {
-  const encoder = new TextEncoder();
-  const stream = new ReadableStream({
-    async start(controller) {
-      const words = text.split(/(\s+)/);
-      for (const w of words) {
-        controller.enqueue(encoder.encode(`0:${JSON.stringify(w)}\n`));
-        await new Promise((r) => setTimeout(r, 18));
-      }
-      controller.enqueue(
-        encoder.encode(
-          `d:${JSON.stringify({
-            finishReason: "stop",
-            usage: { promptTokens: 0, completionTokens: 0 },
-          })}\n`,
-        ),
-      );
-      controller.close();
+function sendFallback(res: Response, text: string): void {
+  const stream = createUIMessageStream({
+    execute: (writer) => {
+      writer.write({ type: "text-delta", textDelta: text });
     },
   });
-  return new Response(stream, {
-    headers: {
-      "Content-Type": "text/plain; charset=utf-8",
-      "x-vercel-ai-data-stream": "v1",
-    },
-  });
+  pipeUIMessageStreamToResponse({ response: res, stream });
 }
 
-// @ts-ignore — Express + Web Streams adapter
 router.post("/chat", async (req: Request, res: Response) => {
-  const { messages } = req.body as { messages: CoreMessage[] };
+  const { messages } = req.body as { messages: UIMessage[] };
 
-  const lastUser = [...messages].reverse().find((m) => m.role === "user");
+  const lastUser = [...(messages ?? [])].reverse().find((m) => m.role === "user");
   const lastUserText =
-    typeof lastUser?.content === "string"
-      ? lastUser.content
-      : Array.isArray(lastUser?.content)
-        ? lastUser!.content
-            // @ts-ignore
-            .map((c) => ("text" in c ? c.text : ""))
-            .join(" ")
-        : "";
+    typeof lastUser?.content === "string" ? lastUser.content : "";
 
   if (!process.env.OPENAI_API_KEY) {
-    const fb = fallbackStream(localFallback(lastUserText));
-    res.setHeader("Content-Type", "text/plain; charset=utf-8");
-    res.setHeader("x-vercel-ai-data-stream", "v1");
-    res.setHeader("Transfer-Encoding", "chunked");
-    const reader = fb.body!.getReader();
-    const pump = async () => {
-      const { done, value } = await reader.read();
-      if (done) { res.end(); return; }
-      res.write(value);
-      await pump();
-    };
-    await pump();
+    sendFallback(res, localFallback(lastUserText));
     return;
   }
 
@@ -134,35 +102,14 @@ router.post("/chat", async (req: Request, res: Response) => {
     const result = streamText({
       model: openai("gpt-4o-mini"),
       system: SYSTEM_PROMPT,
-      messages,
+      messages: convertToModelMessages(messages ?? []),
       temperature: 0.4,
-      maxTokens: 400,
+      maxOutputTokens: 400,
     });
-    const webResponse = result.toDataStreamResponse();
-    res.setHeader("Content-Type", webResponse.headers.get("content-type") || "text/plain");
-    res.setHeader("x-vercel-ai-data-stream", "v1");
-    res.setHeader("Transfer-Encoding", "chunked");
-    const reader = webResponse.body!.getReader();
-    const pump = async () => {
-      const { done, value } = await reader.read();
-      if (done) { res.end(); return; }
-      res.write(value);
-      await pump();
-    };
-    await pump();
+    result.pipeUIMessageStreamToResponse(res);
   } catch (err) {
     req.log.error({ err }, "chat streamText failed, using fallback");
-    const fb = fallbackStream(localFallback(lastUserText));
-    res.setHeader("Content-Type", "text/plain; charset=utf-8");
-    res.setHeader("x-vercel-ai-data-stream", "v1");
-    const reader = fb.body!.getReader();
-    const pump = async () => {
-      const { done, value } = await reader.read();
-      if (done) { res.end(); return; }
-      res.write(value);
-      await pump();
-    };
-    await pump();
+    sendFallback(res, localFallback(lastUserText));
   }
 });
 
