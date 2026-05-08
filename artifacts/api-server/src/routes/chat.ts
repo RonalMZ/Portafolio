@@ -77,9 +77,18 @@ function localFallback(userMessage: string): string {
   return `Para detalles más específicos te recomiendo escribirle directamente a ${personalInfo.email}. Puedo contarte de sus proyectos, habilidades o experiencia.`;
 }
 
+function extractUserText(messages: UIMessage[]): string {
+  const last = [...messages].reverse().find((m) => m.role === "user");
+  if (!last) return "";
+  return last.parts
+    .filter((p): p is { type: "text"; text: string } => p.type === "text")
+    .map((p) => p.text)
+    .join(" ");
+}
+
 function sendFallback(res: Response, text: string): void {
   const stream = createUIMessageStream({
-    execute: (writer) => {
+    execute: ({ writer }) => {
       writer.write({ type: "text-delta", textDelta: text });
     },
   });
@@ -88,10 +97,8 @@ function sendFallback(res: Response, text: string): void {
 
 router.post("/chat", async (req: Request, res: Response) => {
   const { messages } = req.body as { messages: UIMessage[] };
-
-  const lastUser = [...(messages ?? [])].reverse().find((m) => m.role === "user");
-  const lastUserText =
-    typeof lastUser?.content === "string" ? lastUser.content : "";
+  const safeMessages: UIMessage[] = Array.isArray(messages) ? messages : [];
+  const lastUserText = extractUserText(safeMessages);
 
   if (!process.env.OPENAI_API_KEY) {
     sendFallback(res, localFallback(lastUserText));
@@ -99,10 +106,11 @@ router.post("/chat", async (req: Request, res: Response) => {
   }
 
   try {
+    const modelMessages = await convertToModelMessages(safeMessages);
     const result = streamText({
       model: openai("gpt-4o-mini"),
       system: SYSTEM_PROMPT,
-      messages: convertToModelMessages(messages ?? []),
+      messages: modelMessages,
       temperature: 0.4,
       maxOutputTokens: 400,
     });
