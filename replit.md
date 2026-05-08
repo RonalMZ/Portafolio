@@ -1,44 +1,54 @@
-# [Project name]
+# Ronal Angulo — Portfolio
 
-_Replace the heading above with the project's name, and this line with one sentence describing what this app does for users._
+A personal developer portfolio for Ronal Angulo, featuring project showcases, skills, experience timeline, and an integrated AI chatbot assistant.
 
 ## Run & Operate
 
-- `pnpm --filter @workspace/api-server run dev` — run the API server (port 5000)
+- `pnpm --filter @workspace/portfolio run dev` — run the portfolio frontend (Vite)
+- `pnpm --filter @workspace/api-server run dev` — run the API server (handles `/api/chat` for the chatbot)
 - `pnpm run typecheck` — full typecheck across all packages
 - `pnpm run build` — typecheck + build all packages
-- `pnpm --filter @workspace/api-spec run codegen` — regenerate API hooks and Zod schemas from the OpenAPI spec
-- `pnpm --filter @workspace/db run push` — push DB schema changes (dev only)
-- Required env: `DATABASE_URL` — Postgres connection string
+- Optional env: `OPENAI_API_KEY` — enables GPT-4o-mini for the chatbot; falls back to local keyword matching if not set
 
 ## Stack
 
 - pnpm workspaces, Node.js 24, TypeScript 5.9
-- API: Express 5
-- DB: PostgreSQL + Drizzle ORM
-- Validation: Zod (`zod/v4`), `drizzle-zod`
-- API codegen: Orval (from OpenAPI spec)
-- Build: esbuild (CJS bundle)
+- Frontend: React 19 + Vite + Tailwind CSS v4 + Framer Motion
+- API: Express 5 with AI SDK (openai/ai)
+- Theme: Purple/cyan gradient, dark mode default, next-themes
 
 ## Where things live
 
-_Populate as you build — short repo map plus pointers to the source-of-truth file for DB schema, API contracts, theme files, etc._
+- `artifacts/portfolio/` — Vite + React frontend artifact (previewPath: `/`)
+- `artifacts/api-server/` — Express backend (previewPath: `/api`)
+- `artifacts/portfolio/src/components/sections/` — hero, about, projects, skills, experience, contact
+- `artifacts/portfolio/src/components/chatbot.tsx` — AI portfolio chatbot
+- `artifacts/portfolio/src/lib/data.ts` — all portfolio content (projects, skills, timeline, personal info)
+- `artifacts/api-server/src/routes/chat.ts` — POST `/chat` → streaming AI chatbot route
+- `.migration-backup/` — original Next.js source (safe to keep as reference)
 
 ## Architecture decisions
 
-_Populate as you build — non-obvious choices a reader couldn't infer from the code (3-5 bullets)._
+- Chatbot calls `${BASE_URL}api/chat` (not hardcoded `/api/chat`) to work with Replit's path-based routing
+- Chat route falls back to local keyword matching when `OPENAI_API_KEY` is not set — works 100% without a key
+- `next/link` → plain `<a>` tags (single-page portfolio, no routing needed)
+- `next/image` → `<img>` tags (Unsplash URLs work fine without Next.js image optimization)
+- `"use client"` directives removed (not needed in Vite)
 
 ## Product
 
-_Describe the high-level user-facing capabilities of this app once they exist._
+A dark-mode developer portfolio showcasing Ronal Angulo's work as a Full Stack developer. Includes animated sections (Hero, About, Projects, Skills, Experience, Contact) and an AI chatbot that answers questions about Ronal's skills and experience.
 
 ## User preferences
 
-_Populate as you build — explicit user instructions worth remembering across sessions._
+- This Replit is connected to `origin = https://github.com/RonalMZ/Portafolio` — only portfolio code here
+- The `restaurant` and `ai-shop-assistant` projects are separate repos/Replits, do NOT add their code here
 
 ## Gotchas
 
-_Populate as you build — sharp edges, "always run X before Y" rules._
+- `pnpm dev` at root has no script — run artifact-specific dev commands
+- Always restart both api-server and portfolio workflows after code changes
+- The `OPENAI_API_KEY` secret is optional — chatbot works in fallback mode without it
 
 ## Pointers
 
