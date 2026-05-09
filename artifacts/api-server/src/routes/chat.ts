@@ -89,7 +89,7 @@ function extractUserText(messages: UIMessage[]): string {
 function sendFallback(res: Response, text: string): void {
   const stream = createUIMessageStream({
     execute: ({ writer }) => {
-      writer.write({ type: "text-delta", id: "fallback", delta: text });
+      writer.write({ type: "text-delta", textDelta: text });
     },
   });
   pipeUIMessageStreamToResponse({ response: res, stream });
