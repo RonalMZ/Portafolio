@@ -1,6 +1,5 @@
 import * as React from "react";
 import { useChat } from "@ai-sdk/react";
-import { DefaultChatTransport, type UIMessage } from "ai";
 import { Bot, Send, Sparkles, User } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -15,33 +14,25 @@ const SUGGESTIONS = [
 
 const BASE = import.meta.env.BASE_URL.replace(/\/$/, "");
 
-const WELCOME: UIMessage = {
-  id: "welcome",
-  role: "assistant",
-  parts: [
-    {
-      type: "text",
-      text: "¡Hola! Soy un asistente IA entrenado con la info de Ronal. Pregúntame por sus skills, proyectos o experiencia.",
-    },
-  ],
-};
-
-function getMessageText(msg: UIMessage): string {
-  return msg.parts
-    .filter((p): p is { type: "text"; text: string } => p.type === "text")
-    .map((p) => p.text)
-    .join("");
-}
-
 export function Chatbot() {
-  const [input, setInput] = React.useState("");
-
-  const { messages, sendMessage, status } = useChat({
-    transport: new DefaultChatTransport({ api: `${BASE}/api/chat` }),
-    messages: [WELCOME],
+  const {
+    messages,
+    input,
+    handleInputChange,
+    handleSubmit,
+    isLoading,
+    append,
+  } = useChat({
+    api: `${BASE}/api/chat`,
+    initialMessages: [
+      {
+        id: "welcome",
+        role: "assistant",
+        content:
+          "¡Hola! Soy un asistente IA entrenado con la info de Ronal. Pregúntame por sus skills, proyectos o experiencia.",
+      },
+    ],
   });
-
-  const isLoading = status === "streaming" || status === "submitted";
 
   const scrollRef = React.useRef<HTMLDivElement>(null);
   React.useEffect(() => {
@@ -51,17 +42,8 @@ export function Chatbot() {
     });
   }, [messages]);
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    const text = input.trim();
-    if (!text || isLoading) return;
-    setInput("");
-    void sendMessage({ text });
-  };
-
   const sendSuggestion = (text: string) => {
-    if (isLoading) return;
-    void sendMessage({ text });
+    void append({ role: "user", content: text });
   };
 
   return (
@@ -119,7 +101,7 @@ export function Chatbot() {
                   : "bg-muted text-foreground",
               )}
             >
-              {getMessageText(m)}
+              {m.content}
             </div>
           </div>
         ))}
@@ -160,11 +142,11 @@ export function Chatbot() {
       >
         <Input
           value={input}
-          onChange={(e) => setInput(e.target.value)}
+          onChange={handleInputChange}
           placeholder="Escribe tu pregunta…"
           className="flex-1"
         />
-        <Button type="submit" size="icon" disabled={isLoading || !input.trim()}>
+        <Button type="submit" size="icon" disabled={isLoading || !(input ?? "").trim()}>
           <Send className="h-4 w-4" />
         </Button>
       </form>
