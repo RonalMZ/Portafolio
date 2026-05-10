@@ -29,7 +29,7 @@ export const stats = [
   { label: "Repos públicos", value: "2" },
   { label: "App IA en producción", value: "1" },
   { label: "Stack principal", value: "Next.js" },
-  { label: "Disponible", value: "Remote" },
+  { label: "Modalidad", value: "Remoto" },
 ];
 
 export type Project = {
@@ -39,7 +39,6 @@ export type Project = {
   image?: string;
   demo?: string;
   code?: string;
-  sourceLabel?: string;
   status: string;
   proof: string[];
   featured?: boolean;
@@ -53,10 +52,9 @@ export const projects: Project[] = [
     tags: ["Next.js", "Vercel AI SDK", "Gemini", "Tailwind"],
     image: "/images/projects/ai-shop-assistant.jpg",
     demo: "https://aishopassistantmzt.vercel.app",
-    sourceLabel: "Código privado",
     status: "Demo en producción",
     proof: [
-      "Proyecto Vercel activo",
+      "Despliegue público en Vercel",
       "Endpoint conversacional con modelo Gemini",
       "UI enfocada en recomendación de productos",
     ],
@@ -75,20 +73,6 @@ export const projects: Project[] = [
       "Base para producto de directorio comercial",
     ],
     featured: true,
-  },
-  {
-    title: "Portafolio",
-    description:
-      "Este sitio: portafolio personal con despliegue continuo en Vercel, chatbot con Gemini y una capa de microinteracciones construida sobre Motion.",
-    tags: ["Next.js", "Motion", "Gemini", "Vercel"],
-    demo: "https://portafolio-ronalmzs-projects.vercel.app",
-    code: "https://github.com/RonalMZ/Portafolio",
-    status: "Producción + código público",
-    proof: [
-      "Deploy público estable",
-      "README y configuración Vercel corregidos",
-      "Chatbot conectado a Gemini",
-    ],
   },
 ];
 
