@@ -3,6 +3,9 @@
 import { motion } from "framer-motion";
 import { Github, Linkedin, ArrowRight, Sparkles, Mail } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { Magnetic } from "@/components/motion-primitives/magnetic";
+import { SpotlightCard } from "@/components/motion-primitives/spotlight-card";
+import { TiltCard } from "@/components/motion-primitives/tilt-card";
 import { personalInfo } from "@/lib/data";
 
 export function Hero() {
@@ -15,10 +18,8 @@ export function Hero() {
         aria-hidden
         className="pointer-events-none absolute inset-0 -z-10"
       >
-        <div className="absolute left-1/2 top-1/3 -z-10 h-[40rem] w-[40rem] -translate-x-1/2 -translate-y-1/2 rounded-full bg-primary/20 blur-[120px]" />
-        <div className="absolute right-10 top-10 -z-10 h-72 w-72 rounded-full bg-purple-500/20 blur-[100px]" />
-        <div className="absolute bottom-10 left-10 -z-10 h-72 w-72 rounded-full bg-cyan-500/20 blur-[100px]" />
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,transparent_0%,hsl(var(--background))_85%)]" />
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_18%,hsl(var(--primary)/0.20),transparent_36%),radial-gradient(circle_at_82%_70%,rgba(34,211,238,0.14),transparent_30%),radial-gradient(circle_at_12%_78%,rgba(16,185,129,0.12),transparent_34%)]" />
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,transparent_0%,hsl(var(--background))_82%)]" />
         <div className="absolute inset-0 bg-[linear-gradient(to_right,hsl(var(--border))_1px,transparent_1px),linear-gradient(to_bottom,hsl(var(--border))_1px,transparent_1px)] bg-[size:64px_64px] opacity-[0.15]" />
       </div>
 
@@ -75,16 +76,20 @@ export function Hero() {
             transition={{ duration: 0.6, delay: 0.35 }}
             className="mt-8 flex flex-wrap items-center gap-3"
           >
-            <Button asChild size="lg">
-              <a href="#projects">
-                Ver Proyectos <ArrowRight className="ml-1" />
-              </a>
-            </Button>
-            <Button asChild variant="outline" size="lg">
-              <a href={personalInfo.social.cv}>
-                <Mail /> Solicitar CV
-              </a>
-            </Button>
+            <Magnetic>
+              <Button asChild size="lg">
+                <a href="#projects">
+                  Ver Proyectos <ArrowRight className="ml-1" />
+                </a>
+              </Button>
+            </Magnetic>
+            <Magnetic intensity={0.16}>
+              <Button asChild variant="outline" size="lg">
+                <a href={personalInfo.social.cv}>
+                  <Mail /> Solicitar CV
+                </a>
+              </Button>
+            </Magnetic>
             <div className="ml-2 flex items-center gap-1">
               <Button asChild variant="ghost" size="icon" aria-label="GitHub">
                 <a
@@ -119,16 +124,18 @@ export function Hero() {
           transition={{ duration: 0.7, delay: 0.2 }}
           className="relative mx-auto aspect-square w-full max-w-sm"
         >
-          <div className="absolute inset-0 -z-10 rounded-full bg-gradient-to-br from-primary via-purple-500 to-cyan-400 opacity-30 blur-3xl" />
-          <div className="relative h-full w-full overflow-hidden rounded-3xl border border-border/60 bg-gradient-to-br from-primary/30 via-purple-500/20 to-cyan-400/20 p-1 shadow-2xl">
-            <div className="relative flex h-full w-full items-center justify-center overflow-hidden rounded-[1.4rem] bg-gradient-to-br from-zinc-900 via-zinc-800 to-zinc-900 text-7xl font-bold text-white">
-              <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_20%,hsl(var(--primary)/0.3),transparent_60%)]" />
-              <span className="relative tracking-tight">RJ</span>
-              <div className="absolute bottom-4 right-4 flex items-center gap-1 rounded-full bg-black/40 px-3 py-1 text-xs font-medium text-white/90 backdrop-blur">
-                <Sparkles className="h-3 w-3" /> AI-ready
+          <TiltCard className="h-full w-full" rotationFactor={5}>
+            <SpotlightCard className="h-full rounded-3xl bg-gradient-to-br from-primary/30 via-emerald-500/10 to-cyan-400/20 p-1 shadow-2xl shadow-primary/10">
+              <div className="relative flex h-full w-full items-center justify-center overflow-hidden rounded-[1.4rem] bg-zinc-950 text-7xl font-bold text-white">
+                <div className="absolute inset-0 bg-[linear-gradient(135deg,rgba(124,58,237,0.22),transparent_38%),radial-gradient(circle_at_70%_75%,rgba(34,211,238,0.22),transparent_34%)]" />
+                <div className="absolute inset-x-8 top-8 h-px bg-gradient-to-r from-transparent via-white/30 to-transparent" />
+                <span className="relative tracking-tight">RJ</span>
+                <div className="absolute bottom-4 right-4 flex items-center gap-1 rounded-full bg-white/10 px-3 py-1 text-xs font-medium text-white/90 backdrop-blur">
+                  <Sparkles className="h-3 w-3" /> AI-ready
+                </div>
               </div>
-            </div>
-          </div>
+            </SpotlightCard>
+          </TiltCard>
         </motion.div>
       </div>
     </section>

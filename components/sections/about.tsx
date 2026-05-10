@@ -1,9 +1,9 @@
 "use client";
 
-import { motion } from "framer-motion";
 import { MapPin } from "lucide-react";
 import { personalInfo, stats } from "@/lib/data";
 import { SectionHeading } from "@/components/section-heading";
+import { InView } from "@/components/motion-primitives/in-view";
 
 export function About() {
   return (
@@ -16,11 +16,7 @@ export function About() {
         />
 
         <div className="mt-12 grid gap-10 lg:grid-cols-[1.4fr_1fr]">
-          <motion.div
-            initial={{ opacity: 0, y: 24 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true, amount: 0.3 }}
-            transition={{ duration: 0.6 }}
+          <InView
             className="space-y-5 text-lg leading-relaxed text-muted-foreground"
           >
             <p>{personalInfo.bio}</p>
@@ -29,15 +25,9 @@ export function About() {
               <MapPin className="h-4 w-4 text-primary" />
               {personalInfo.location}
             </div>
-          </motion.div>
+          </InView>
 
-          <motion.div
-            initial={{ opacity: 0, y: 24 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true, amount: 0.3 }}
-            transition={{ duration: 0.6, delay: 0.1 }}
-            className="grid grid-cols-2 gap-4"
-          >
+          <InView delay={0.1} className="grid grid-cols-2 gap-4">
             {stats.map((stat) => (
               <div
                 key={stat.label}
@@ -54,7 +44,7 @@ export function About() {
                 </div>
               </div>
             ))}
-          </motion.div>
+          </InView>
         </div>
       </div>
     </section>
