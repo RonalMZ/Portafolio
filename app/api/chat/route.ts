@@ -1,4 +1,5 @@
 import { createOpenAI } from "@ai-sdk/openai";
+import { createGoogleGenerativeAI } from "@ai-sdk/google";
 import { generateText, type CoreMessage } from "ai";
 import { personalInfo, projects, skillCategories, timeline } from "@/lib/data";
 
@@ -47,10 +48,62 @@ LinkedIn: ${personalInfo.social.linkedin}
 Responde siempre en máximo 4-5 oraciones, salvo que pidan detalle. Usa listas
 solo si ayudan. No uses emojis.`;
 
-const OPENAI_MODEL = process.env.OPENAI_MODEL || "gpt-4o-mini";
+const DEFAULT_OPENAI_MODEL = process.env.OPENAI_MODEL || "gpt-4o-mini";
+const DEFAULT_GOOGLE_MODEL = process.env.GOOGLE_MODEL || "gemini-2.0-flash";
 
-function getOpenAIKey() {
-  return process.env.OPENAI_API_KEY?.trim().replace(/^["']|["']$/g, "");
+function cleanKey(value: string | undefined) {
+  return value?.trim().replace(/^["']|["']$/g, "");
+}
+
+function getAIConfig() {
+  const rawOpenAIKey = cleanKey(process.env.OPENAI_API_KEY);
+  const explicitGoogleKey =
+    cleanKey(process.env.GOOGLE_GENERATIVE_AI_API_KEY) ||
+    cleanKey(process.env.GOOGLE_API_KEY);
+  const googleKey =
+    explicitGoogleKey || (rawOpenAIKey?.startsWith("AIza") ? rawOpenAIKey : "");
+  const openAIKey =
+    rawOpenAIKey && !rawOpenAIKey.startsWith("AIza") ? rawOpenAIKey : "";
+
+  if (openAIKey) {
+    return {
+      configured: true,
+      provider: "openai" as const,
+      model: DEFAULT_OPENAI_MODEL,
+      apiKey: openAIKey,
+    };
+  }
+
+  if (googleKey) {
+    return {
+      configured: true,
+      provider: "google" as const,
+      model: DEFAULT_GOOGLE_MODEL,
+      apiKey: googleKey,
+    };
+  }
+
+  return {
+    configured: false,
+    provider: "local" as const,
+    model: "modo local",
+    apiKey: "",
+  };
+}
+
+function summarizeAIError(error: unknown) {
+  const candidate = error as {
+    name?: string;
+    statusCode?: number;
+    data?: { error?: { code?: string; type?: string } };
+  };
+
+  return {
+    name: candidate.name || "AIProviderError",
+    statusCode: candidate.statusCode,
+    code: candidate.data?.error?.code,
+    type: candidate.data?.error?.type,
+  };
 }
 
 /**
@@ -140,9 +193,12 @@ function fallbackStream(text: string): Response {
 }
 
 export async function GET() {
+  const config = getAIConfig();
+
   return Response.json({
-    configured: Boolean(getOpenAIKey()),
-    model: OPENAI_MODEL,
+    configured: config.configured,
+    provider: config.provider,
+    model: config.model,
   });
 }
 
@@ -161,19 +217,25 @@ export async function POST(req: Request) {
             .join(" ")
         : "";
 
-  const apiKey = getOpenAIKey();
+  const aiConfig = getAIConfig();
 
-  if (!apiKey) {
+  if (!aiConfig.configured) {
     return fallbackStream(localFallback(lastUserText));
   }
 
   try {
-    const openai = createOpenAI({
-      apiKey,
-      compatibility: "strict",
-    });
+    const model =
+      aiConfig.provider === "openai"
+        ? createOpenAI({
+            apiKey: aiConfig.apiKey,
+            compatibility: "strict",
+          })(aiConfig.model)
+        : createGoogleGenerativeAI({
+            apiKey: aiConfig.apiKey,
+          })(aiConfig.model);
+
     const result = await generateText({
-      model: openai(OPENAI_MODEL),
+      model,
       system: SYSTEM_PROMPT,
       messages,
       temperature: 0.4,
@@ -182,9 +244,13 @@ export async function POST(req: Request) {
 
     return fallbackStream(result.text);
   } catch (err) {
-    console.error("[chat] OpenAI failed, using local fallback:", err);
+    console.error("[chat] AI provider failed, using local fallback:", {
+      provider: aiConfig.provider,
+      model: aiConfig.model,
+      error: summarizeAIError(err),
+    });
     return fallbackStream(
-      `Estoy usando mi modo local porque OpenAI no respondió correctamente. ${localFallback(
+      `Estoy usando mi modo local porque el proveedor de IA no respondió correctamente. ${localFallback(
         lastUserText,
       )}`,
     );

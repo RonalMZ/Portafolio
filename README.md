@@ -64,8 +64,13 @@ El chatbot funciona sin API key usando un fallback local con respuestas pre-carg
 
 3. Reinicia `npm run dev`.
 
-En Vercel, agrega `OPENAI_API_KEY` en **Production** y vuelve a desplegar.
-Opcionalmente puedes definir `OPENAI_MODEL`; si no existe, usa `gpt-4o-mini`.
+En Vercel, agrega la variable en **Production** y vuelve a desplegar:
+
+- OpenAI: `OPENAI_API_KEY` con una key que empieza por `sk-`.
+- Google Gemini: `GOOGLE_GENERATIVE_AI_API_KEY` o `GOOGLE_API_KEY` con una key que empieza por `AIza`.
+
+Opcionalmente puedes definir `OPENAI_MODEL` o `GOOGLE_MODEL`; si no existen,
+usa `gpt-4o-mini` para OpenAI y `gemini-2.0-flash` para Gemini.
 
 ---
 

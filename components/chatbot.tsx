@@ -17,6 +17,7 @@ const SUGGESTIONS = [
 export function Chatbot() {
   const [aiStatus, setAiStatus] = React.useState<{
     configured: boolean;
+    provider: string;
     model: string;
   } | null>(null);
   const {
@@ -58,7 +59,11 @@ export function Chatbot() {
       })
       .catch(() => {
         if (active) {
-          setAiStatus({ configured: false, model: "modo local" });
+          setAiStatus({
+            configured: false,
+            provider: "local",
+            model: "modo local",
+          });
         }
       });
 
@@ -88,7 +93,9 @@ export function Chatbot() {
             <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-75" />
             <span className="relative inline-flex h-2 w-2 rounded-full bg-emerald-500" />
           </span>
-          {aiStatus?.configured ? aiStatus.model : "modo local"}
+          {aiStatus?.configured
+            ? `${aiStatus.provider} · ${aiStatus.model}`
+            : "modo local"}
         </span>
       </CardHeader>
 

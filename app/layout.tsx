@@ -7,6 +7,7 @@ import { Footer } from "@/components/footer";
 import { personalInfo } from "@/lib/data";
 
 const siteUrl = "https://portafolio-ronalmzs-projects.vercel.app";
+const previewImage = "/images/projects/ai-shop-assistant.jpg";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -44,7 +45,7 @@ export const metadata: Metadata = {
     siteName: `${personalInfo.name} Portafolio`,
     images: [
       {
-        url: "/opengraph-image",
+        url: previewImage,
         width: 1200,
         height: 630,
         alt: `${personalInfo.name} — ${personalInfo.role}`,
@@ -57,7 +58,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: personalInfo.name,
     description: personalInfo.tagline,
-    images: ["/opengraph-image"],
+    images: [previewImage],
   },
   alternates: {
     canonical: siteUrl,
