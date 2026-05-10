@@ -70,7 +70,7 @@ En Vercel, agrega la variable en **Production** y vuelve a desplegar:
 - Google Gemini: `GOOGLE_GENERATIVE_AI_API_KEY` o `GOOGLE_API_KEY` con una key que empieza por `AIza`.
 
 Opcionalmente puedes definir `OPENAI_MODEL` o `GOOGLE_MODEL`; si no existen,
-usa `gpt-4o-mini` para OpenAI y `gemini-1.5-flash` para Gemini.
+usa `gpt-4o-mini` para OpenAI y `gemini-2.5-flash` para Gemini.
 
 ---
 
