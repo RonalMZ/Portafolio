@@ -11,7 +11,7 @@ export function About() {
       <div className="container">
         <SectionHeading
           eyebrow="Sobre mí"
-          title="Júnior, hambriento de buenos productos."
+          title="Junior enfocado en productos reales."
           description="Vivo el desarrollo como un oficio: construir algo, romperlo, mejorarlo, y volverlo a construir. Aprendo más rápido cuando el código termina en manos de personas reales."
         />
 

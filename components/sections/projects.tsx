@@ -1,7 +1,7 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { ExternalLink, Github, Sparkles } from "lucide-react";
+import { CheckCircle2, ExternalLink, Github, LockKeyhole, Sparkles } from "lucide-react";
 import {
   Card,
   CardContent,
@@ -25,11 +25,11 @@ export function Projects() {
       <div className="container">
         <SectionHeading
           eyebrow="Proyectos"
-          title="Cosas que he construido (y que pienso seguir mejorando)."
-          description="Pequeños productos, experimentos con IA y mini-tiendas. Cada uno me enseñó algo distinto sobre escribir código que de verdad termina en producción."
+          title="Trabajo verificable, sin relleno."
+          description="Menos tarjetas, más evidencia: proyectos que existen, tienen despliegue o repositorio público, y explican qué problema intentan resolver."
         />
 
-        <div className="mt-12 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+        <div className="mt-12 grid gap-6 lg:grid-cols-3">
           {projects.map((project, i) => (
             <motion.div
               key={project.title}
@@ -46,6 +46,7 @@ export function Projects() {
                         image={project.image}
                         title={project.title}
                         tags={project.tags}
+                        status={project.status}
                       />
                       <ProgressiveBlur direction="top" className="opacity-80" />
                       <div className="absolute inset-0 bg-gradient-to-t from-background/85 via-background/10 to-transparent" />
@@ -57,6 +58,9 @@ export function Projects() {
                     </div>
 
                     <CardHeader>
+                      <div className="mb-3 inline-flex w-fit rounded-full border border-border/60 bg-background/70 px-2.5 py-1 text-xs font-medium text-muted-foreground">
+                        {project.status}
+                      </div>
                       <CardTitle className="text-xl">{project.title}</CardTitle>
                       <CardDescription className="line-clamp-3">
                         {project.description}
@@ -71,27 +75,48 @@ export function Projects() {
                       ))}
                     </CardContent>
 
-                    <CardFooter className="mt-auto gap-2 pt-0">
-                      <Button asChild size="sm" className="flex-1">
-                        <a
-                          href={project.demo}
-                          target="_blank"
-                          rel="noreferrer"
-                          aria-label={`Ver demo de ${project.title}`}
+                    <CardContent className="space-y-2 pt-0">
+                      {project.proof.map((item) => (
+                        <div
+                          key={item}
+                          className="flex gap-2 text-sm text-muted-foreground"
                         >
-                          <ExternalLink /> Ver Demo
-                        </a>
-                      </Button>
-                      <Button asChild size="sm" variant="outline" className="flex-1">
-                        <a
-                          href={project.code}
-                          target="_blank"
-                          rel="noreferrer"
-                          aria-label={`Ver código de ${project.title}`}
-                        >
-                          <Github /> Ver Código
-                        </a>
-                      </Button>
+                          <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-primary" />
+                          <span>{item}</span>
+                        </div>
+                      ))}
+                    </CardContent>
+
+                    <CardFooter className="mt-auto flex-wrap gap-2 pt-0">
+                      {project.demo && (
+                        <Button asChild size="sm" className="flex-1">
+                          <a
+                            href={project.demo}
+                            target="_blank"
+                            rel="noreferrer"
+                            aria-label={`Ver demo de ${project.title}`}
+                          >
+                            <ExternalLink /> Ver Demo
+                          </a>
+                        </Button>
+                      )}
+                      {project.code ? (
+                        <Button asChild size="sm" variant="outline" className="flex-1">
+                          <a
+                            href={project.code}
+                            target="_blank"
+                            rel="noreferrer"
+                            aria-label={`Ver código de ${project.title}`}
+                          >
+                            <Github /> Ver Código
+                          </a>
+                        </Button>
+                      ) : (
+                        <div className="inline-flex flex-1 items-center justify-center gap-2 rounded-md border border-border/60 px-3 py-2 text-xs font-medium text-muted-foreground">
+                          <LockKeyhole className="h-3.5 w-3.5" />
+                          {project.sourceLabel ?? "Código privado"}
+                        </div>
+                      )}
                     </CardFooter>
                   </Card>
                 </SpotlightCard>

@@ -9,7 +9,7 @@ import {
 
 export const personalInfo = {
   name: "Ronal Angulo",
-  role: "Desarrollador Full Stack",
+  role: "Desarrollador Full Stack Junior",
   specialty: "IA & E-commerce",
   tagline:
     "Construyo experiencias digitales inteligentes con Next.js y IA",
@@ -26,19 +26,22 @@ export const personalInfo = {
 };
 
 export const stats = [
-  { label: "Proyectos construidos", value: "12+" },
-  { label: "Tecnologías dominadas", value: "15" },
-  { label: "Café por día", value: "∞" },
-  { label: "Listo para trabajar", value: "100%" },
+  { label: "Repos públicos", value: "2" },
+  { label: "App IA en producción", value: "1" },
+  { label: "Stack principal", value: "Next.js" },
+  { label: "Disponible", value: "Remote" },
 ];
 
 export type Project = {
   title: string;
   description: string;
   tags: string[];
-  image: string;
-  demo: string;
-  code: string;
+  image?: string;
+  demo?: string;
+  code?: string;
+  sourceLabel?: string;
+  status: string;
+  proof: string[];
   featured?: boolean;
 };
 
@@ -46,74 +49,46 @@ export const projects: Project[] = [
   {
     title: "AI Shop Assistant",
     description:
-      "Asistente inteligente de compras con IA que recomienda productos personalizados usando lenguaje natural y streaming en tiempo real.",
-    tags: ["Next.js", "Vercel AI SDK", "Gemini", "Tailwind", "shadcn/ui"],
+      "Asistente de compras con IA desplegado en Vercel. La prioridad fue convertir una búsqueda genérica en una conversación útil con recomendaciones de producto.",
+    tags: ["Next.js", "Vercel AI SDK", "Gemini", "Tailwind"],
     image: "/images/projects/ai-shop-assistant.jpg",
     demo: "https://aishopassistantmzt.vercel.app",
-    code: "https://github.com/RonalMZ/ai-shop-assistant",
+    sourceLabel: "Código privado",
+    status: "Demo en producción",
+    proof: [
+      "Proyecto Vercel activo",
+      "Endpoint conversacional con modelo Gemini",
+      "UI enfocada en recomendación de productos",
+    ],
     featured: true,
   },
   {
-    title: "ShopAI — Asistente de compras",
+    title: "Directorio-MZT",
     description:
-      "Tienda demo con un asistente conversacional que recomienda productos en base al gusto del usuario, usando embeddings y la API de OpenAI.",
-    tags: ["Next.js", "Vercel AI SDK", "OpenAI", "Tailwind"],
-    image:
-      "https://images.unsplash.com/photo-1556761175-5973dc0f32e7?w=1200&q=80",
-    demo: "https://example.com/shopai",
-    code: "https://github.com/RonalMZ/shop-ai",
+      "Directorio local para Mazatlán inspirado en el concepto de libro amarillo: negocios, categorías y búsqueda orientada a usuarios reales de la ciudad.",
+    tags: ["Next.js", "TypeScript", "Tailwind", "Arquitectura full-stack"],
+    code: "https://github.com/RonalMZ/Directorio-MZT",
+    status: "Repositorio público",
+    proof: [
+      "Código público en GitHub",
+      "Dominio de negocio local claro",
+      "Base para producto de directorio comercial",
+    ],
     featured: true,
   },
   {
-    title: "Mercado Sinaloa — Tienda local",
+    title: "Portafolio",
     description:
-      "E-commerce sencillo para productores locales, con carrito persistente, checkout simulado y panel de administración básico.",
-    tags: ["Next.js", "Stripe (test)", "PostgreSQL", "shadcn/ui"],
-    image:
-      "https://images.unsplash.com/photo-1503602642458-232111445657?w=1200&q=80",
-    demo: "https://example.com/mercado-sinaloa",
-    code: "https://github.com/RonalMZ/mercado-sinaloa",
-    featured: true,
-  },
-  {
-    title: "DevChat — Chatbot para portafolios",
-    description:
-      "Componente de chatbot reutilizable que responde preguntas sobre tus skills y proyectos. El mismo que vive en este sitio.",
-    tags: ["React", "Vercel AI SDK", "TypeScript"],
-    image:
-      "https://images.unsplash.com/photo-1531746790731-6c087fecd65a?w=1200&q=80",
-    demo: "https://example.com/devchat",
-    code: "https://github.com/RonalMZ/devchat",
-  },
-  {
-    title: "TaskFlow — Gestor de tareas",
-    description:
-      "App de productividad con drag & drop, etiquetas y modo enfoque. Pensada para sentir que el trabajo fluye, no que se acumula.",
-    tags: ["React", "Zustand", "Framer Motion"],
-    image:
-      "https://images.unsplash.com/photo-1611224923853-80b023f02d71?w=1200&q=80",
-    demo: "https://example.com/taskflow",
-    code: "https://github.com/RonalMZ/taskflow",
-  },
-  {
-    title: "Clima Now — Dashboard del tiempo",
-    description:
-      "Dashboard meteorológico minimalista con búsqueda por ciudad, gráficas por hora y soporte para geolocalización.",
-    tags: ["Next.js", "OpenWeather API", "Recharts"],
-    image:
-      "https://images.unsplash.com/photo-1561553873-e8491a564fd0?w=1200&q=80",
-    demo: "https://example.com/clima-now",
-    code: "https://github.com/RonalMZ/clima-now",
-  },
-  {
-    title: "Landing Studio — Plantillas",
-    description:
-      "Colección de landing pages animadas listas para arrancar un negocio. Componentes desacoplados y fáciles de adaptar.",
-    tags: ["Next.js", "Framer Motion", "Tailwind"],
-    image:
-      "https://images.unsplash.com/photo-1467232004584-a241de8bcf5d?w=1200&q=80",
-    demo: "https://example.com/landing-studio",
-    code: "https://github.com/RonalMZ/landing-studio",
+      "Este sitio: portafolio personal con despliegue continuo en Vercel, chatbot con Gemini y una capa de microinteracciones construida sobre Motion.",
+    tags: ["Next.js", "Motion", "Gemini", "Vercel"],
+    demo: "https://portafolio-ronalmzs-projects.vercel.app",
+    code: "https://github.com/RonalMZ/Portafolio",
+    status: "Producción + código público",
+    proof: [
+      "Deploy público estable",
+      "README y configuración Vercel corregidos",
+      "Chatbot conectado a Gemini",
+    ],
   },
 ];
 
