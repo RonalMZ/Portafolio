@@ -49,7 +49,7 @@ Responde siempre en máximo 4-5 oraciones, salvo que pidan detalle. Usa listas
 solo si ayudan. No uses emojis.`;
 
 const DEFAULT_OPENAI_MODEL = process.env.OPENAI_MODEL || "gpt-4o-mini";
-const DEFAULT_GOOGLE_MODEL = process.env.GOOGLE_MODEL || "gemini-2.0-flash";
+const DEFAULT_GOOGLE_MODEL = process.env.GOOGLE_MODEL || "gemini-1.5-flash";
 
 function cleanKey(value: string | undefined) {
   return value?.trim().replace(/^["']|["']$/g, "");
@@ -240,6 +240,7 @@ export async function POST(req: Request) {
       messages,
       temperature: 0.4,
       maxTokens: 400,
+      maxRetries: 0,
     });
 
     return fallbackStream(result.text);
