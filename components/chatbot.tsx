@@ -15,6 +15,10 @@ const SUGGESTIONS = [
 ];
 
 export function Chatbot() {
+  const [aiStatus, setAiStatus] = React.useState<{
+    configured: boolean;
+    model: string;
+  } | null>(null);
   const {
     messages,
     input,
@@ -42,6 +46,27 @@ export function Chatbot() {
     });
   }, [messages]);
 
+  React.useEffect(() => {
+    let active = true;
+
+    fetch("/api/chat", { cache: "no-store" })
+      .then((res) => (res.ok ? res.json() : null))
+      .then((status) => {
+        if (active && status) {
+          setAiStatus(status);
+        }
+      })
+      .catch(() => {
+        if (active) {
+          setAiStatus({ configured: false, model: "modo local" });
+        }
+      });
+
+    return () => {
+      active = false;
+    };
+  }, []);
+
   const sendSuggestion = (text: string) => {
     void append({ role: "user", content: text });
   };
@@ -63,7 +88,7 @@ export function Chatbot() {
             <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-75" />
             <span className="relative inline-flex h-2 w-2 rounded-full bg-emerald-500" />
           </span>
-          en línea
+          {aiStatus?.configured ? aiStatus.model : "modo local"}
         </span>
       </CardHeader>
 

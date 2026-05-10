@@ -6,6 +6,8 @@ import { Navbar } from "@/components/navbar";
 import { Footer } from "@/components/footer";
 import { personalInfo } from "@/lib/data";
 
+const siteUrl = "https://portafolio-ronalmzs-projects.vercel.app";
+
 const inter = Inter({
   subsets: ["latin"],
   variable: "--font-sans",
@@ -19,6 +21,7 @@ const jetbrains = JetBrains_Mono({
 });
 
 export const metadata: Metadata = {
+  metadataBase: new URL(siteUrl),
   title: `${personalInfo.name} — ${personalInfo.role} | ${personalInfo.specialty}`,
   description: personalInfo.tagline,
   keywords: [
@@ -37,6 +40,16 @@ export const metadata: Metadata = {
   openGraph: {
     title: `${personalInfo.name} — ${personalInfo.role}`,
     description: personalInfo.tagline,
+    url: siteUrl,
+    siteName: `${personalInfo.name} Portafolio`,
+    images: [
+      {
+        url: "/opengraph-image",
+        width: 1200,
+        height: 630,
+        alt: `${personalInfo.name} — ${personalInfo.role}`,
+      },
+    ],
     type: "website",
     locale: "es_MX",
   },
@@ -44,6 +57,10 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: personalInfo.name,
     description: personalInfo.tagline,
+    images: ["/opengraph-image"],
+  },
+  alternates: {
+    canonical: siteUrl,
   },
 };
 

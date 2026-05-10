@@ -1,6 +1,5 @@
 "use client";
 
-import Image from "next/image";
 import { motion } from "framer-motion";
 import { ExternalLink, Github, Sparkles } from "lucide-react";
 import {
@@ -14,6 +13,7 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { SectionHeading } from "@/components/section-heading";
+import { ProjectImage } from "@/components/project-image";
 import { projects } from "@/lib/data";
 
 export function Projects() {
@@ -37,12 +37,10 @@ export function Projects() {
             >
               <Card className="group flex h-full flex-col overflow-hidden border-border/60 bg-background/60 backdrop-blur transition-all hover:-translate-y-1 hover:border-primary/40 hover:shadow-lg">
                 <div className="relative aspect-[16/10] overflow-hidden">
-                  <Image
-                    src={project.image}
-                    alt={project.title}
-                    fill
-                    sizes="(max-width: 768px) 100vw, (max-width: 1280px) 50vw, 33vw"
-                    className="object-cover transition-transform duration-500 group-hover:scale-105"
+                  <ProjectImage
+                    image={project.image}
+                    title={project.title}
+                    tags={project.tags}
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-background/80 via-transparent to-transparent" />
                   {project.featured && (

@@ -64,6 +64,9 @@ El chatbot funciona sin API key usando un fallback local con respuestas pre-carg
 
 3. Reinicia `npm run dev`.
 
+En Vercel, agrega `OPENAI_API_KEY` en **Production** y vuelve a desplegar.
+Opcionalmente puedes definir `OPENAI_MODEL`; si no existe, usa `gpt-4o-mini`.
+
 ---
 
 ## 3) Personalizar tu información

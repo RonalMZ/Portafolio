@@ -1,5 +1,5 @@
-import { openai } from "@ai-sdk/openai";
-import { streamText, type CoreMessage } from "ai";
+import { createOpenAI } from "@ai-sdk/openai";
+import { generateText, type CoreMessage } from "ai";
 import { personalInfo, projects, skillCategories, timeline } from "@/lib/data";
 
 export const runtime = "nodejs";
@@ -46,6 +46,12 @@ LinkedIn: ${personalInfo.social.linkedin}
 
 Responde siempre en máximo 4-5 oraciones, salvo que pidan detalle. Usa listas
 solo si ayudan. No uses emojis.`;
+
+const OPENAI_MODEL = process.env.OPENAI_MODEL || "gpt-4o-mini";
+
+function getOpenAIKey() {
+  return process.env.OPENAI_API_KEY?.trim().replace(/^["']|["']$/g, "");
+}
 
 /**
  * Smart fallback used when no OPENAI_API_KEY is configured.
@@ -133,6 +139,13 @@ function fallbackStream(text: string): Response {
   });
 }
 
+export async function GET() {
+  return Response.json({
+    configured: Boolean(getOpenAIKey()),
+    model: OPENAI_MODEL,
+  });
+}
+
 export async function POST(req: Request) {
   const { messages } = (await req.json()) as { messages: CoreMessage[] };
 
@@ -148,21 +161,32 @@ export async function POST(req: Request) {
             .join(" ")
         : "";
 
-  if (!process.env.OPENAI_API_KEY) {
+  const apiKey = getOpenAIKey();
+
+  if (!apiKey) {
     return fallbackStream(localFallback(lastUserText));
   }
 
   try {
-    const result = streamText({
-      model: openai("gpt-4o-mini"),
+    const openai = createOpenAI({
+      apiKey,
+      compatibility: "strict",
+    });
+    const result = await generateText({
+      model: openai(OPENAI_MODEL),
       system: SYSTEM_PROMPT,
       messages,
       temperature: 0.4,
       maxTokens: 400,
     });
-    return result.toDataStreamResponse();
+
+    return fallbackStream(result.text);
   } catch (err) {
-    console.error("[chat] streamText failed, using fallback:", err);
-    return fallbackStream(localFallback(lastUserText));
+    console.error("[chat] OpenAI failed, using local fallback:", err);
+    return fallbackStream(
+      `Estoy usando mi modo local porque OpenAI no respondió correctamente. ${localFallback(
+        lastUserText,
+      )}`,
+    );
   }
 }
